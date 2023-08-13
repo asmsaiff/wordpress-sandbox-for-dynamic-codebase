@@ -58,7 +58,7 @@
                     <!-- Dashboard link -->
                     <a
                         class="text-neutral-500 transition duration-200 hover:text-neutral-700 hover:ease-in-out focus:text-neutral-700 disabled:text-black/30 motion-reduce:transition-none"
-                        href="#"
+                        href="<?php echo home_url('/dashboard'); ?>"
                         data-te-nav-link-ref
                         >Dashboard</a
                     >
@@ -176,7 +176,7 @@
                         aria-expanded="false">
                         <!-- User avatar -->
                         <img
-                            src="https://tecdn.b-cdn.net/img/new/avatars/2.jpg"
+                            src="<?php $user = wp_get_current_user(); echo get_avatar_url($user->ID); ?>"
                             class="rounded-full"
                             style="height: 25px; width: 25px"
                             alt=""
