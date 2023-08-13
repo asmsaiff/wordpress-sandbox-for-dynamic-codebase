@@ -25,8 +25,53 @@
         wp_enqueue_style('tw-elem-stylesheet', '//cdn.jsdelivr.net/npm/tw-elements/dist/css/tw-elements.min.css');
 
         // Scripts
-        wp_enqueue_script('tailwind', '//cdn.tailwindcss.com', time(), null, false);
-        wp_enqueue_script('tailwind-elem', '//cdn.jsdelivr.net/npm/tw-elements/dist/js/tw-elements.umd.min.js', time(), null, true);
-        wp_enqueue_script('app-js', get_template_directory_uri() . '/assets/js/app.js', time(), null, true);
+        wp_enqueue_script('tailwind', '//cdn.tailwindcss.com', null, time(), false);
+        wp_enqueue_script('tailwind-elem', '//cdn.jsdelivr.net/npm/tw-elements/dist/js/tw-elements.umd.min.js', null, time(), true);
+        wp_enqueue_script('app-js', get_template_directory_uri() . '/assets/js/app.js', array('jquery'), time(), true);
+
+        // Define ajaxurl for use in JavaScript
+        wp_localize_script('app-js', 'aj', array('ajaxurl' => admin_url('admin-ajax.php')));
     }
     add_action( 'wp_enqueue_scripts', 'sb_assets_enqueue' );
+
+    function handle_file_upload_ajax() {
+        if (isset($_FILES['file_upload'])) {
+            $file = $_FILES['file_upload'];
+    
+            // Your validation and handling logic here
+    
+            $upload_dir = wp_upload_dir();
+            $file_path = $upload_dir['path'] . '/' . $file['name'];
+    
+            if (move_uploaded_file($file['tmp_name'], $file_path)) {
+                $attachment = array(
+                    'guid'           => $upload_dir['url'] . '/' . $file['name'],
+                    'post_mime_type' => $file['type'],
+                    'post_title'     => sanitize_file_name($file['name']),
+                    'post_content'   => '',
+                    'post_status'    => 'inherit'
+                );
+    
+                $attachment_id = wp_insert_attachment($attachment, $file_path);
+    
+                if (!is_wp_error($attachment_id)) {
+                    require_once ABSPATH . 'wp-admin/includes/image.php';
+                    $attachment_data = wp_generate_attachment_metadata($attachment_id, $file_path);
+                    wp_update_attachment_metadata($attachment_id, $attachment_data);
+    
+                    echo 'File uploaded successfully!';
+                } else {
+                    echo 'Error uploading file.';
+                }
+            } else {
+                echo 'Error moving file.';
+            }
+        } else {
+            echo 'No file uploaded.';
+        }
+    
+        die();
+    }
+    add_action('wp_ajax_handle_file_upload', 'handle_file_upload_ajax');
+    add_action('wp_ajax_nopriv_handle_file_upload', 'handle_file_upload_ajax');
+    
