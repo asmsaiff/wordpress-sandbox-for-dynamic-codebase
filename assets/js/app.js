@@ -1,0 +1,1 @@
+initTE({ Collapse, Dropdown });
