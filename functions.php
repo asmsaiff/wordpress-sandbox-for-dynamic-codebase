@@ -11,6 +11,8 @@
         add_theme_support( 'menus' );
         add_theme_support( 'post-thumbnails' );
 
+        add_theme_support('woocommerce');
+
         // Menu Register
         register_nav_menus(array(
             'primary-menu'      =>  __('Primary Menu', 'sb'),
@@ -23,55 +25,85 @@
         // StyleSheets
         wp_enqueue_style('wp-stylesheet', get_stylesheet_directory_uri());
         wp_enqueue_style('tw-elem-stylesheet', '//cdn.jsdelivr.net/npm/tw-elements/dist/css/tw-elements.min.css');
+        wp_enqueue_style('theme', get_template_directory_uri() . '/assets/css/style.css');
 
         // Scripts
         wp_enqueue_script('tailwind', '//cdn.tailwindcss.com', null, time(), false);
-        wp_enqueue_script('tailwind-elem', '//cdn.jsdelivr.net/npm/tw-elements/dist/js/tw-elements.umd.min.js', null, time(), true);
         wp_enqueue_script('app-js', get_template_directory_uri() . '/assets/js/app.js', array('jquery'), time(), true);
 
-        // Define ajaxurl for use in JavaScript
-        wp_localize_script('app-js', 'aj', array('ajaxurl' => admin_url('admin-ajax.php')));
+        // Define ajax url for use in JavaScript
+        wp_localize_script('app-js', 'aj', array(
+            'ajax_url'  => admin_url('admin-ajax.php'),
+            'nonce'     => wp_create_nonce('wp_rest'),
+            'ajax_nonce'     => wp_create_nonce('custom-ajax-nonce'),
+        ));
     }
     add_action( 'wp_enqueue_scripts', 'sb_assets_enqueue' );
 
-    function handle_file_upload_ajax() {
-        if (isset($_FILES['file_upload'])) {
-            $file = $_FILES['file_upload'];
+
+
+    function get_cart_product_count() {
+        echo WC()->cart->get_cart_contents_count();
+        die();
+    }
+    add_action('wp_ajax_get_cart_product_count', 'get_cart_product_count');
+    add_action('wp_ajax_nopriv_get_cart_product_count', 'get_cart_product_count');
     
-            // Your validation and handling logic here
+
+    function custom_add_to_cart() {    
+        $product_id = apply_filters('woocommerce_add_to_cart_product_id', absint($_POST['product_id']));
+        $quantity = 1; // Product quantity limited to 1
     
-            $upload_dir = wp_upload_dir();
-            $file_path = $upload_dir['path'] . '/' . $file['name'];
+        $result = WC()->cart->add_to_cart($product_id, $quantity);
     
-            if (move_uploaded_file($file['tmp_name'], $file_path)) {
-                $attachment = array(
-                    'guid'           => $upload_dir['url'] . '/' . $file['name'],
-                    'post_mime_type' => $file['type'],
-                    'post_title'     => sanitize_file_name($file['name']),
-                    'post_content'   => '',
-                    'post_status'    => 'inherit'
-                );
-    
-                $attachment_id = wp_insert_attachment($attachment, $file_path);
-    
-                if (!is_wp_error($attachment_id)) {
-                    require_once ABSPATH . 'wp-admin/includes/image.php';
-                    $attachment_data = wp_generate_attachment_metadata($attachment_id, $file_path);
-                    wp_update_attachment_metadata($attachment_id, $attachment_data);
-    
-                    echo 'File uploaded successfully!';
-                } else {
-                    echo 'Error uploading file.';
-                }
-            } else {
-                echo 'Error moving file.';
-            }
+        if ($result) {
+            echo 'success';
         } else {
-            echo 'No file uploaded.';
+            echo 'error';
         }
     
         die();
     }
-    add_action('wp_ajax_handle_file_upload', 'handle_file_upload_ajax');
-    add_action('wp_ajax_nopriv_handle_file_upload', 'handle_file_upload_ajax');
+    add_action('wp_ajax_custom_add_to_cart', 'custom_add_to_cart');
+    add_action('wp_ajax_nopriv_custom_add_to_cart', 'custom_add_to_cart');
+    
+    
+    
+
+    function custom_get_cart_contents() {
+        ob_start();
+    ?>
+    <?php
+        foreach (WC()->cart->get_cart() as $cart_item_key => $cart_item) {
+            $_product = apply_filters('woocommerce_cart_item_product', $cart_item['data'], $cart_item, $cart_item_key);
+            $product_id = apply_filters('woocommerce_cart_item_product_id', $cart_item['product_id'], $cart_item, $cart_item_key);
+    ?>
+    <div class="cart-item">
+        <div class="cart-item-details">
+            <div class="cart-item-title"><?php echo $_product->get_name(); ?></div>
+            <div class="cart-item-price"><?php echo wc_price($_product->get_price()); ?></div>
+            <div class="cart-quantity-display">Cart Quantity: <span class="cart-quantity">0</span></div>
+            <button class="remove-cart-item bg-red-700 text-white text-xs px-3 py-1 rounded-sm" data-cart-item-id="<?php echo $cart_item_key; ?>">X</button>
+        </div>
+        <hr>
+    </div>
+    <?php
+        }
+    
+        $cart_contents = ob_get_clean();
+        echo $cart_contents;
+    }
+    add_action('wp_ajax_custom_get_cart_contents', 'custom_get_cart_contents');
+    add_action('wp_ajax_nopriv_custom_get_cart_contents', 'custom_get_cart_contents');
+    
+
+    function custom_remove_cart_item() {
+        if (isset($_POST['cart_item_id'])) {
+            $cart_item_key = sanitize_text_field($_POST['cart_item_id']);
+            WC()->cart->remove_cart_item($cart_item_key);
+        }
+        die();
+    }
+    add_action('wp_ajax_custom_remove_cart_item', 'custom_remove_cart_item');
+    add_action('wp_ajax_nopriv_custom_remove_cart_item', 'custom_remove_cart_item');
     

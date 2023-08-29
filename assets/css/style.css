@@ -1,0 +1,14 @@
+th {
+    border-bottom: 2px solid gray;
+}
+td {
+    padding: 15px 0;
+    border-bottom: 1px solid silver;
+}
+
+.button.product_type_simple.add_to_cart_button.ajax_add_to_cart {
+	background: tomato;
+	color: #fff;
+	display: block;
+	margin: 10px 0;
+}
