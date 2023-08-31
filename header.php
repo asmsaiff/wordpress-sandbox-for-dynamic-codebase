@@ -58,6 +58,15 @@
                     <!-- Dashboard link -->
                     <a
                         class="text-neutral-500 transition duration-200 hover:text-neutral-700 hover:ease-in-out focus:text-neutral-700 disabled:text-black/30 motion-reduce:transition-none"
+                        href="<?php echo home_url('/reservation'); ?>"
+                        data-te-nav-link-ref
+                        >Reservation</a
+                    >
+                    </li>
+                    <li class="mb-4 lg:mb-0 lg:pr-2" data-te-nav-item-ref>
+                    <!-- Dashboard link -->
+                    <a
+                        class="text-neutral-500 transition duration-200 hover:text-neutral-700 hover:ease-in-out focus:text-neutral-700 disabled:text-black/30 motion-reduce:transition-none"
                         href="<?php echo home_url('/custom-shop'); ?>"
                         data-te-nav-link-ref
                         >Custom Shop</a

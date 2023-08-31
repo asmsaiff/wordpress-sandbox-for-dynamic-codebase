@@ -1,6 +1,7 @@
 <?php
     // Libraries
     require_once(get_theme_file_path( '/lib/acf/acf.php' ));
+    require_once(get_theme_file_path( '/inc/post-type.php' ));
 
     // Theme Setup
     function sb_theme_setup() {
@@ -54,14 +55,15 @@
         $product_id = apply_filters('woocommerce_add_to_cart_product_id', absint($_POST['product_id']));
         $quantity = 1; // Product quantity limited to 1
     
-        $result = WC()->cart->add_to_cart($product_id, $quantity);
-    
+        // Use WooCommerce's AJAX add_to_cart handler
+        $result = WC_AJAX::add_to_cart($product_id, $quantity);
+
         if ($result) {
             echo 'success';
         } else {
             echo 'error';
         }
-    
+
         die();
     }
     add_action('wp_ajax_custom_add_to_cart', 'custom_add_to_cart');
@@ -107,3 +109,34 @@
     add_action('wp_ajax_custom_remove_cart_item', 'custom_remove_cart_item');
     add_action('wp_ajax_nopriv_custom_remove_cart_item', 'custom_remove_cart_item');
     
+    function reservation_data() {
+        if(check_ajax_referer('reservation', 'rn')) {
+            $name = sanitize_text_field($_POST['name']);
+            $email = sanitize_text_field($_POST['email']);
+            $persons = sanitize_text_field($_POST['persons']);
+            $date = sanitize_text_field($_POST['date']);
+            $time = sanitize_text_field($_POST['time']);
+
+            $data = array(
+                'name'      =>  $name,
+                'email'     =>  $email,
+                'persons'   =>  $persons,
+                'date'      =>  $date,
+                'time'      =>  $time
+            );
+
+            print_r($data);
+
+            wp_insert_post(array(
+                'post_title'        =>  sprintf('%s reserved at %s : %s for %s person', $name, $date, $time, $persons),
+                'post_date'         =>  date('Y-m-d H:i:s'),
+                'post_status'       =>  'publish',
+                'post_type'         =>  'reservation',
+                'post_author'       => 1,
+                'meta_input'        => $data
+            ));
+        }
+        die();
+    }
+    add_action('wp_ajax_reservation', 'reservation_data');
+    add_action('wp_ajax_nopriv_reservation', 'reservation_data');

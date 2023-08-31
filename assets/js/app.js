@@ -110,7 +110,7 @@
     
             $.ajax({
                 type: 'POST',
-                url: wc_add_to_cart_params.ajax_url,
+                url: aj.ajax_url,
                 data: {
                     action: 'custom_remove_cart_item',
                     cart_item_id: cartItemId
@@ -123,6 +123,31 @@
 
         updateCartContents();
     });
+
+
+    $("#reserve").click(function () {
+        $.post(aj.ajax_url, {
+            action: 'reservation',
+            name: $("#name").val(),
+            email: $("#email").val(),
+            persons: $("#persons").val(),
+            date: $("#date").val(),
+            time: $("#time").val(),
+            rn: $("#rn").val()
+        }, function (data) {
+            console.log(data)
+        })
+        return false;
+    })
 }(jQuery)); 
 
-initTE({ Collapse, Dropdown, Tab, Ripple, Datatable });
+// const initTE = window.initTE();
+// const Collapse = window.Collapse;
+// const Dropdown = window.Dropdown;
+// const Tab = window.Tab;
+// const Ripple = window.Ripple;
+// const Datatable = window.Datatable;
+// const Datepicker = window.Datepicker;
+// const Input = window.Input;
+
+// initTE({ Collapse, Dropdown, Tab, Ripple, Datatable, Datepicker, Input });
