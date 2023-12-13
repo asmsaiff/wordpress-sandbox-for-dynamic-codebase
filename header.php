@@ -43,7 +43,7 @@
                 <!-- Logo -->
                 <a
                     class="mb-4 ml-2 mr-5 mt-3 flex items-center text-neutral-900 hover:text-neutral-900 focus:text-neutral-900 lg:mb-0 lg:mt-0"
-                    href="#">
+                    href="<?php echo home_url(); ?>">
                     <img
                     src="https://tecdn.b-cdn.net/img/logo/te-transparent-noshadows.webp"
                     style="height: 15px"
@@ -71,6 +71,15 @@
                         data-te-nav-link-ref
                         >Custom Shop</a
                     >
+                    </li>
+                    <li class="mb-4 lg:mb-0 lg:pr-2" data-te-nav-item-ref>
+                        <!-- Dashboard link -->
+                        <a
+                            class="text-neutral-500 transition duration-200 hover:text-neutral-700 hover:ease-in-out focus:text-neutral-700 disabled:text-black/30 motion-reduce:transition-none"
+                            href="<?php echo home_url('/repeater'); ?>"
+                            data-te-nav-link-ref
+                            >Repeater</a
+                        >
                     </li>
                     <li class="mb-4 lg:mb-0 lg:pr-2" data-te-nav-item-ref>
                     <!-- Dashboard link -->

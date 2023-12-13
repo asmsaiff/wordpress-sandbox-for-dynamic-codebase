@@ -1,5 +1,7 @@
 ; (function ($) {
-    jQuery(document).ready(function($) {
+    jQuery(document).ready(function ($) {
+        
+
         $(".edit-post").click(function () {
             var post_id = $(this).data('post-id');
 
@@ -139,6 +141,30 @@
         })
         return false;
     })
+
+    $('#submitPost').on('click', function () {
+        // Create FormData object
+        var formData = new FormData($('#postForm')[0]);
+
+        // Add additional post meta data
+        formData.append('action', 'insert_post');
+
+        // Make AJAX request
+        $.ajax({
+            type: 'POST',
+            url: aj.ajax_url,
+            data: formData,
+            contentType: false,
+            processData: false,
+            success: function (response) {
+                $('#postForm')[0].reset();
+            },
+            error: function (error) {
+                console.error(error);
+                // Handle error, e.g., show an error message
+            }
+        });
+    });
 }(jQuery)); 
 
 // const initTE = window.initTE();

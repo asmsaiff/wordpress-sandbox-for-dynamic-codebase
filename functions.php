@@ -30,6 +30,7 @@
 
         // Scripts
         wp_enqueue_script('tailwind', '//cdn.tailwindcss.com', null, time(), false);
+        wp_enqueue_script('repeater-js', get_template_directory_uri() . '/assets/js/repeater.js', array('jquery'), time(), true);
         wp_enqueue_script('app-js', get_template_directory_uri() . '/assets/js/app.js', array('jquery'), time(), true);
 
         // Define ajax url for use in JavaScript
@@ -140,3 +141,67 @@
     }
     add_action('wp_ajax_reservation', 'reservation_data');
     add_action('wp_ajax_nopriv_reservation', 'reservation_data');
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    // AJAX handler for inserting a post
+    function insert_post_ajax_handler() {
+        $post_title = sanitize_text_field($_POST['post_title']);
+        $post_content = wp_kses_post($_POST['post_content']);
+
+        $post_data = array(
+            'post_title' => $post_title,
+            'post_content' => $post_content,
+            'post_status' => 'publish',
+            'post_type' => 'post',
+        );
+
+        // Insert the post
+        $post_id = wp_insert_post($post_data);
+
+        // Handle featured image upload
+        if ($post_id && isset($_FILES['featured_image'])) {
+            require_once(ABSPATH . 'wp-admin/includes/image.php');
+            require_once(ABSPATH . 'wp-admin/includes/file.php');
+            require_once(ABSPATH . 'wp-admin/includes/media.php');
+
+            $attachmentId = media_handle_upload('featured_image', $post_id);
+            
+            if ($attachmentId) {
+                set_post_thumbnail($post_id, $attachmentId);
+            }
+        }
+
+        wp_die();
+    }
+
+    add_action('wp_ajax_insert_post', 'insert_post_ajax_handler');
+    add_action('wp_ajax_nopriv_insert_post', 'insert_post_ajax_handler');
