@@ -3,7 +3,7 @@
 <head>
     <meta charset="<?php bloginfo('charset'); ?>">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
+
     <?php wp_head(); ?>
 </head>
 <body data-theme="light">
@@ -101,12 +101,20 @@
                     </li>
                     <!-- Projects link -->
                     <li class="mb-4 lg:mb-0 lg:pr-2" data-te-nav-item-ref>
-                    <a
-                        class="text-neutral-500 transition duration-200 hover:text-neutral-700 hover:ease-in-out focus:text-neutral-700 disabled:text-black/30 motion-reduce:transition-none"
-                        href="#"
-                        data-te-nav-link-ref
-                        >Projects</a
-                    >
+                        <a
+                            class="text-neutral-500 transition duration-200 hover:text-neutral-700 hover:ease-in-out focus:text-neutral-700 disabled:text-black/30 motion-reduce:transition-none"
+                            href="#"
+                            data-te-nav-link-ref
+                            >Projects</a
+                        >
+                    </li>
+                    <li class="mb-4 lg:mb-0 lg:pr-2" data-te-nav-item-ref>
+                        <a
+                            class="text-neutral-500 transition duration-200 hover:text-neutral-700 hover:ease-in-out focus:text-neutral-700 disabled:text-black/30 motion-reduce:transition-none"
+                            href="<?php echo home_url('/login'); ?>"
+                            data-te-nav-link-ref
+                            >Login</a
+                        >
                     </li>
                 </ul>
                 </div>
@@ -212,7 +220,7 @@
                         </a>
                         <!-- Second dropdown menu -->
                         <ul
-                        class="absolute left-auto right-0 z-[1000] float-left m-0 mt-1 hidden min-w-max list-none overflow-hidden rounded-lg border-none bg-white bg-clip-padding text-left text-base shadow-lg 
+                        class="absolute left-auto right-0 z-[1000] float-left m-0 mt-1 hidden min-w-max list-none overflow-hidden rounded-lg border-none bg-white bg-clip-padding text-left text-base shadow-lg
                         [&[data-te-dropdown-show]]:block"
                         aria-labelledby="dropdownMenuButton2"
                         data-te-dropdown-menu-ref>
